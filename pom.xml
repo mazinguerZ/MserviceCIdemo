@@ -12,7 +12,119 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <repoName>MserviceCIdemo</repoName>
+        <scmURI>git@github.com:mazinguerZ</scmURI>
+        <ciURI>http://localhost:8081</ciURI>
+        <nexusRepositories>http://localhost:8081/nexus/content/repositories</nexusRepositories>
+        
+        <!-- repositories for distribution -->
+        <!-- snapshots -->
+        <repoMavenSnapshotId>repo-snapshot</repoMavenSnapshotId>
+        <repoMavenSnapshotName>repo-snapshot</repoMavenSnapshotName>
+        <repoMavenSnapshotUrl>${nexusRepositories}/snapshots</repoMavenSnapshotUrl>
+
+        <!-- releases -->
+        <repoMavenId>repo-release</repoMavenId>
+        <repoMavenName>repo-release</repoMavenName>
+        <repoMavenUrl>${nexusRepositories}/releases</repoMavenUrl>
+
+        <!-- thirdparty -->
+        <repoMavenThirdpartyId>repo-third-party-release</repoMavenThirdpartyId>
+        <repoMavenThirdpartyName>repo-third-party-release</repoMavenThirdpartyName>
+        <repoMavenThirdpartyUrl>${nexusRepositories}/thirdparty</repoMavenThirdpartyUrl>
+
+        <!-- site -->
+        <repoSiteId>nexus-site-repository</repoSiteId>
+        <repoSiteName>repo-site</repoSiteName>
+        <repoSiteUrl>${ciURI}</repoSiteUrl>
     </properties>
+    
+    <scm>
+        <connection>scm:git:${scmURI}/${repoName}.git</connection>
+        <developerConnection>scm:git:${scmURI}/${repoName}.git</developerConnection>
+        <url>${scmURI}/${repoName}</url>
+        <tag>HEAD</tag>    
+    </scm>
+    
+        
+    <repositories>
+
+		<!-- ci-neosdp Nexus Repositories -->
+		<repository>
+			<id>${repoMavenSnapshotId}</id>
+			<name>${repoMavenSnapshotName}</name>
+			<url>${repoMavenSnapshotUrl}</url>
+		</repository>
+		<repository>
+			<id>${repoMavenId}</id>
+			<name>${repoMavenName}</name>
+			<url>${repoMavenUrl}</url>
+		</repository>
+		<repository>
+			<id>${repoMavenThirdpartyId}</id>
+			<name>${repoMavenThirdpartyName}</name>
+			<url>${repoMavenThirdpartyUrl}</url>
+		</repository>
+
+		<!-- Remote Repositories -->
+		<repository>
+			<id>central</id>
+			<name>central-repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>central2</id>
+			<name>central2-repository</name>
+			<url>http://repo2.maven.org/maven2</url>
+		</repository>
+
+		<!-- SpringSource repositories -->
+		<repository>
+			<id>com.springsource.repository.libraries.release</id>
+			<name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
+			<url>http://repository.springsource.com/maven/libraries/release</url>
+		</repository>
+		<repository>
+			<id>com.springsource.repository.libraries.external</id>
+			<name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+			<url>http://repository.springsource.com/maven/libraries/external</url>
+		</repository>
+
+		<!-- Mojo repository -->
+		<repository>
+			<id>mojo-executor-repository</id>
+			<name>Mojo Executor Repository for Maven</name>
+			<url>http://twdata-m2-repository.googlecode.com/svn/</url>
+		</repository>
+	</repositories>
+    
+    
+    <distributionManagement>
+
+        <!-- Releases Repository -->
+        <repository>
+                <id>${repoMavenId}</id>
+                <name>${repoMavenName}</name>
+                <url>${repoMavenUrl}</url>
+                <uniqueVersion>false</uniqueVersion>
+        </repository>
+
+        <!-- Snapshots Repository -->
+        <snapshotRepository>
+                <id>${repoMavenSnapshotId}</id>
+                <name>${repoMavenSnapshotName}</name>
+                <url>${repoMavenSnapshotUrl}</url>
+                <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+
+        <!-- Project Site -->
+        <site>
+                <id>${repoSiteId}</id>
+                <name>${repoSiteName}</name>
+                <url>${repoSiteUrl}/ci/${project.artifactId}</url>
+        </site>
+
+    </distributionManagement>
 
     <dependencies>
         <dependency>
