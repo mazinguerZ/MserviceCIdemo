@@ -17,6 +17,10 @@
         <ciURI>http://localhost:8081</ciURI>
         <nexusRepositories>http://localhost:8081/nexus/content/repositories</nexusRepositories>
         
+        <rpm.install.basedir>/opt/tomcat</rpm.install.basedir>
+        <rpm.install.webapps>${rpm.install.basedir}/webapps</rpm.install.webapps>
+        <rpm.install.config>${rpm.install.basedir}/lib</rpm.install.config>
+        
         <!-- repositories for distribution -->
         <!-- snapshots -->
         <repoMavenSnapshotId>repo-snapshot</repoMavenSnapshotId>
@@ -207,6 +211,63 @@
                         <doUpdate>true</doUpdate>
                 </configuration>
            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.1-alpha-3</version>
+                <extensions>true</extensions>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>attached-rpm</goal>
+                    </goals>
+                  </execution>
+                </executions>
+                <configuration>
+                  <copyright>UAH</copyright>
+                  <distribution>My Distribution</distribution>
+                  <group>Applications/Internet</group>
+                  <packager>${user.name}</packager>
+                  <changelogFile>CHANGELOG</changelogFile>
+                  <defaultDirmode>500</defaultDirmode>
+                  <defaultFilemode>400</defaultFilemode>
+                  <defaultUsername>root</defaultUsername>
+                  <defaultGroupname>root</defaultGroupname>
+                  <requires>
+                    <require>apache-tomcat &gt;= 6.0.39</require>
+                  </requires>
+                  <mappings>
+
+                    <!-- webapps deployment -->
+                    <mapping>
+                      <directory>${rpm.install.webapps}/${project.artifactId}</directory>
+                      <sources>
+                        <source>
+                          <location>target/${project.artifactId}-${project.version}</location>
+                        </source>
+                      </sources>
+                    </mapping>
+
+                    <!-- configuration files -->
+                    <mapping>
+                      <directory>${rpm.install.config}</directory>
+                      <configuration>true</configuration>
+                      <sources>
+                        <source>
+                          <location>src/main/</location>
+                        </source>
+                      </sources>
+                    </mapping>
+
+                    <!-- (Optional) Create other necessary directory structure -->
+                  </mappings>
+
+                  <!-- (Optional) -->
+                <postinstallScriptlet>
+                    <script>echo "WARNING: Restart tomcat to ensure changes take effect."</script>
+                  </postinstallScriptlet>
+                </configuration>
+         </plugin>
         </plugins>
     </build>
 
