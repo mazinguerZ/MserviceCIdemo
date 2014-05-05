@@ -4,8 +4,9 @@
 
     <groupId>dpl.uah.service.ci</groupId>
     <artifactId>MserviceCIdemo</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
+    <!-- -->
 
     <name>MserviceCIdemo</name>
 
@@ -144,131 +145,362 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+	
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<!-- <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
+			<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+							<compilerArguments>
+								<endorseddirs>${endorsed.dir}</endorseddirs>
+							</compilerArguments>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.1.1</version>
+						<configuration>
+							<failOnMissingWebXml>false</failOnMissingWebXml>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.1</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${endorsed.dir}</outputDirectory>
+									<silent>true</silent>
+									<artifactItems>
+										<artifactItem>
+											<groupId>javax</groupId>
+											<artifactId>javaee-endorsed-api</artifactId>
+											<version>6.0</version>
+											<type>jar</type>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					 <plugin>
+						<!-- En modo SNAPSHOT se hace coincidir con el número de revisión del 
+								SVN -->
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+								<execution>
+										<phase>validate</phase>
+										<goals>
+												<goal>create</goal>
+										</goals>
+								</execution>
+						</executions>
+						<configuration>
+								<doCheck>false</doCheck>
+								<doUpdate>true</doUpdate>
+								<shortRevisionLength>5</shortRevisionLength>
+								<items>
+									<item>scmVersion</item>
+								</items>
+								<timestampPropertyName>-</timestampPropertyName>
+						</configuration>
+				   </plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<version>2.1-alpha-3</version>
+						<extensions>true</extensions>
+						<executions>
+						  <execution>
+							 <id>properties</id>
+							 <goals>
+								<goal>version</goal>
+							 </goals>
+							 <configuration>
+								
+							 </configuration>
+						  </execution>
+				  <execution>
+							<goals>
+							  <goal>rpm</goal>
+							</goals>
+						  </execution>
+						</executions>
+						<configuration>
+						  <copyright>UAH</copyright>
+						  <distribution>My Distribution</distribution>
+						  <group>Applications/Internet</group>
+						  <packager>${user.name}</packager>
+						  <version>${project.version}</version>
+						 <!--  <release>${buildNumber}</release> -->
+						  <changelogFile>CHANGELOG</changelogFile>
+						  <defaultDirmode>500</defaultDirmode>
+						  <defaultFilemode>400</defaultFilemode>
+						  <defaultUsername>root</defaultUsername>
+						  <defaultGroupname>root</defaultGroupname>
+						  <requires>
+							<require>apache-tomcat &gt;= 6.0.39</require>
+						  </requires>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.1</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
-                            <silent>true</silent>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>javax</groupId>
-                                    <artifactId>javaee-endorsed-api</artifactId>
-                                    <version>6.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-             <plugin>
-                <!-- En modo SNAPSHOT se hace coincidir con el número de revisión del 
-                        SVN -->
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0</version>
-                <executions>
-                        <execution>
-                                <phase>validate</phase>
-                                <goals>
-                                        <goal>create</goal>
-                                </goals>
-                        </execution>
-                </executions>
-                <configuration>
-                        <doCheck>false</doCheck>
-                        <doUpdate>true</doUpdate>
-                </configuration>
-           </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.1-alpha-3</version>
-                <extensions>true</extensions>
-                <executions>
-                  <execution>
-                    <goals>
-                      <goal>attached-rpm</goal>
-                    </goals>
-                  </execution>
-                </executions>
-                <configuration>
-                  <copyright>UAH</copyright>
-                  <distribution>My Distribution</distribution>
-                  <group>Applications/Internet</group>
-                  <packager>${user.name}</packager>
-                  <changelogFile>CHANGELOG</changelogFile>
-                  <defaultDirmode>500</defaultDirmode>
-                  <defaultFilemode>400</defaultFilemode>
-                  <defaultUsername>root</defaultUsername>
-                  <defaultGroupname>root</defaultGroupname>
-                  <requires>
-                    <require>apache-tomcat &gt;= 6.0.39</require>
-                  </requires>
-                  <mappings>
+						  <mappings>
 
-                    <!-- webapps deployment -->
-                    <mapping>
-                      <directory>${rpm.install.webapps}/${project.artifactId}</directory>
-                      <sources>
-                        <source>
-                          <location>target/${project.artifactId}-${project.version}</location>
-                        </source>
-                      </sources>
-                    </mapping>
+							<!-- webapps deployment -->
+							<mapping>
+							  <directory>${rpm.install.webapps}/${project.artifactId}</directory>
+							  <sources>
+								<source>
+								  <location>target/${project.artifactId}-${project.version}</location> 
+					  <!--<location>$\{project.artifactId}-$\{project.version}-r${buildNumber}</location>-->
+								</source>
+							  </sources>
+							</mapping>
 
-                    <!-- configuration files -->
-                    <mapping>
-                      <directory>${rpm.install.config}</directory>
-                      <configuration>true</configuration>
-                      <sources>
-                        <source>
-                          <location>src/main/</location>
-                        </source>
-                      </sources>
-                    </mapping>
+							<!-- configuration files -->
+							<mapping>
+							  <directory>${rpm.install.config}</directory>
+							  <configuration>true</configuration>
+							  <sources>
+								<source>
+								  <location>src/main/</location>
+								</source>
+							  </sources>
+							</mapping>
 
-                    <!-- (Optional) Create other necessary directory structure -->
-                  </mappings>
+							<!-- (Optional) Create other necessary directory structure -->
+						  </mappings>
 
-                  <!-- (Optional) -->
-                <postinstallScriptlet>
-                    <script>echo "WARNING: Restart tomcat to ensure changes take effect."</script>
-                  </postinstallScriptlet>
-                </configuration>
-         </plugin>
-        </plugins>
-    </build>
+				  <!-- (Optional) -->
+						  <postinstallScriptlet>
+							<script>echo "WARNING: Restart tomcat to ensure changes take effect."</script>
+						  </postinstallScriptlet>
+						</configuration>
+
+				 </plugin>
+				 <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<executions>
+						<execution>
+								 <id>deploy-release</id>
+								 <goals>
+									<goal>deploy-file</goal>
+								 </goals>
+								 <phase>deploy</phase>
+								 <configuration>
+									<directories>
+										<directory>target/rpm/MserviceCIdemo/RPMS/noarch/</directory>
+									</directories>
+								<repositoryId>${repoMavenId}</repositoryId>
+									<url>${repoMavenUrl}</url>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}-r${buildNumber}</version>
+									<!-- <file>${project.build.directory}/${project.artifactId}-${project.version}-r${buildNumber}.rpm</file> -->
+								<file>target/rpm/MserviceCIdemo/RPMS/noarch/${project.artifactId}-${project.version}-${buildNumber}.noarch.rpm</file>
+								<uniqueVersion>false</uniqueVersion>
+									<packaging>rpm</packaging>
+								 </configuration>
+							</execution>
+					</executions>
+				 </plugin>
+				</plugins>
+				<!--! <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
+			</build>
+		</profile>
+		<profile>
+			<id>snapshot</id>
+			<build>
+				<!-- <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
+			<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+							<compilerArguments>
+								<endorseddirs>${endorsed.dir}</endorseddirs>
+							</compilerArguments>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.1.1</version>
+						<configuration>
+							<failOnMissingWebXml>false</failOnMissingWebXml>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.1</version>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${endorsed.dir}</outputDirectory>
+									<silent>true</silent>
+									<artifactItems>
+										<artifactItem>
+											<groupId>javax</groupId>
+											<artifactId>javaee-endorsed-api</artifactId>
+											<version>6.0</version>
+											<type>jar</type>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					 <plugin>
+						<!-- En modo SNAPSHOT se hace coincidir con el número de revisión del 
+								SVN -->
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+								<execution>
+										<phase>validate</phase>
+										<goals>
+												<goal>create</goal>
+										</goals>
+								</execution>
+						</executions>
+						<configuration>
+								<doCheck>false</doCheck>
+								<doUpdate>true</doUpdate>
+								<shortRevisionLength>5</shortRevisionLength>
+								<timestampFormat>{0, date,yyyyMMddHHmmss}</timestampFormat>
+
+								<items>
+									<item>scmVersion</item>
+									<item>timestamp</item>
+								</items>
+						</configuration>
+				   </plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<version>2.1-alpha-3</version>
+						<extensions>true</extensions>
+						<executions>
+						  <execution>
+							 <id>properties</id>
+							 <goals>
+								<goal>version</goal>
+							 </goals>
+							 <configuration>
+								
+							 </configuration>
+						  </execution>
+				  <execution>
+							<goals>
+							  <goal>rpm</goal>
+							</goals>
+						  </execution>
+						</executions>
+						<configuration>
+						  <copyright>UAH</copyright>
+						  <distribution>My Distribution</distribution>
+						  <group>Applications/Internet</group>
+						  <packager>${user.name}</packager>
+						  <version>${project.version}</version>
+						 <!--  <release>${buildNumber}</release> -->
+						  <changelogFile>CHANGELOG</changelogFile>
+						  <defaultDirmode>500</defaultDirmode>
+						  <defaultFilemode>400</defaultFilemode>
+						  <defaultUsername>root</defaultUsername>
+						  <defaultGroupname>root</defaultGroupname>
+						  <requires>
+							<require>apache-tomcat &gt;= 6.0.39</require>
+						  </requires>
+
+						  <mappings>
+
+							<!-- webapps deployment -->
+							<mapping>
+							  <directory>${rpm.install.webapps}/${project.artifactId}</directory>
+							  <sources>
+								<source>
+								  <location>target/${project.artifactId}-${project.version}</location> 
+					  <!--<location>$\{project.artifactId}-$\{project.version}-r${buildNumber}</location>-->
+								</source>
+							  </sources>
+							</mapping>
+
+							<!-- configuration files -->
+							<mapping>
+							  <directory>${rpm.install.config}</directory>
+							  <configuration>true</configuration>
+							  <sources>
+								<source>
+								  <location>src/main/</location>
+								</source>
+							  </sources>
+							</mapping>
+
+							<!-- (Optional) Create other necessary directory structure -->
+						  </mappings>
+
+				  <!-- (Optional) -->
+						  <postinstallScriptlet>
+							<script>echo "WARNING: Restart tomcat to ensure changes take effect."</script>
+						  </postinstallScriptlet>
+						</configuration>
+
+				 </plugin>
+				 <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<executions>
+						<execution>
+								 <id>deploy-snapshot</id>
+								 <goals>
+									<goal>deploy-file</goal>
+								 </goals>
+								 <phase>deploy</phase>
+								 <configuration>
+									<directories>
+										<directory>target/rpm/MserviceCIdemo/RPMS/noarch/</directory>
+									</directories>
+								<repositoryId>${repoMavenSnapshotId}</repositoryId>
+									<url>${repoMavenSnapshotUrl}</url>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}-r${buildNumber}</version>
+									<!-- <file>${project.build.directory}/${project.artifactId}-${project.version}-r${buildNumber}.rpm</file> -->
+								<file>target/rpm/MserviceCIdemo/RPMS/noarch/${project.artifactId}-${project.version}${timestamp}.noarch.rpm</file>
+								<uniqueVersion>false</uniqueVersion>
+									<packaging>rpm</packaging>
+								 </configuration>
+							</execution>
+					</executions>
+				 </plugin>
+				</plugins>
+				<!--! <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
+			</build>
+		</profile>
+	</profiles>
 
 </project>
