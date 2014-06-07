@@ -150,7 +150,6 @@
 		<profile>
 			<id>release</id>
 			<build>
-				<!-- <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
 			<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -214,7 +213,7 @@
 						<configuration>
 								<doCheck>false</doCheck>
 								<doUpdate>true</doUpdate>
-								<shortRevisionLength>5</shortRevisionLength>
+								<shortRevisionLength>7</shortRevisionLength>
 								<items>
 									<item>scmVersion</item>
 								</items>
@@ -236,7 +235,7 @@
 								
 							 </configuration>
 						  </execution>
-				  <execution>
+				  		  <execution>
 							<goals>
 							  <goal>rpm</goal>
 							</goals>
@@ -248,7 +247,7 @@
 						  <group>Applications/Internet</group>
 						  <packager>${user.name}</packager>
 						  <version>${project.version}</version>
-						 <!--  <release>${buildNumber}</release> -->
+						  <release>${buildNumber}</release>
 						  <changelogFile>CHANGELOG</changelogFile>
 						  <defaultDirmode>500</defaultDirmode>
 						  <defaultFilemode>400</defaultFilemode>
@@ -266,7 +265,6 @@
 							  <sources>
 								<source>
 								  <location>target/${project.artifactId}-${project.version}</location> 
-					  <!--<location>$\{project.artifactId}-$\{project.version}-r${buildNumber}</location>-->
 								</source>
 							  </sources>
 							</mapping>
@@ -281,11 +279,7 @@
 								</source>
 							  </sources>
 							</mapping>
-
-							<!-- (Optional) Create other necessary directory structure -->
 						  </mappings>
-
-				  <!-- (Optional) -->
 						  <postinstallScriptlet>
 							<script>echo "WARNING: Restart tomcat to ensure changes take effect."</script>
 						  </postinstallScriptlet>
@@ -311,8 +305,7 @@
 									<groupId>${project.groupId}</groupId>
 									<artifactId>${project.artifactId}</artifactId>
 									<version>${project.version}-r${buildNumber}</version>
-									<!-- <file>${project.build.directory}/${project.artifactId}-${project.version}-r${buildNumber}.rpm</file> -->
-								<file>target/rpm/MserviceCIdemo/RPMS/noarch/${project.artifactId}-${project.version}-${buildNumber}.noarch.rpm</file>
+									<file>target/rpm/MserviceCIdemo/RPMS/noarch/${project.artifactId}-${project.version}-${buildNumber}.noarch.rpm</file>
 								<uniqueVersion>false</uniqueVersion>
 									<packaging>rpm</packaging>
 								 </configuration>
@@ -320,13 +313,17 @@
 					</executions>
 				 </plugin>
 				</plugins>
-				<!--! <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
 			</build>
 		</profile>
 		<profile>
 			<id>snapshot</id>
 			<build>
-				<!-- <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
+			<resources>
+				<resource>
+					<directory>src/main/resources</directory>
+					<filtering>true</filtering>
+				</resource>
+			</resources>
 			<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -338,6 +335,7 @@
 							<compilerArguments>
 								<endorseddirs>${endorsed.dir}</endorseddirs>
 							</compilerArguments>
+							<outputFileName>${project.artifactId}-${project.version}${timestamp}</outputFileName>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -346,7 +344,8 @@
 						<version>2.1.1</version>
 						<configuration>
 							<failOnMissingWebXml>false</failOnMissingWebXml>
-						</configuration>
+							<warName>${project.artifactId}-${project.version}${timestamp}</warName>
+						</configuration> 
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -383,16 +382,14 @@
 								<execution>
 										<phase>validate</phase>
 										<goals>
-												<goal>create</goal>
+											<goal>create</goal>
 										</goals>
 								</execution>
 						</executions>
 						<configuration>
 								<doCheck>false</doCheck>
 								<doUpdate>true</doUpdate>
-								<shortRevisionLength>5</shortRevisionLength>
-								<timestampFormat>{0, date,yyyyMMddHHmmss}</timestampFormat>
-
+								<shortRevisionLength>7</shortRevisionLength>
 								<items>
 									<item>scmVersion</item>
 									<item>timestamp</item>
@@ -426,7 +423,7 @@
 						  <group>Applications/Internet</group>
 						  <packager>${user.name}</packager>
 						  <version>${project.version}</version>
-						 <!--  <release>${buildNumber}</release> -->
+						  <release>SNAPSHOT${timestamp}</release>
 						  <changelogFile>CHANGELOG</changelogFile>
 						  <defaultDirmode>500</defaultDirmode>
 						  <defaultFilemode>400</defaultFilemode>
@@ -444,7 +441,6 @@
 							  <sources>
 								<source>
 								  <location>target/${project.artifactId}-${project.version}</location> 
-					  <!--<location>$\{project.artifactId}-$\{project.version}-r${buildNumber}</location>-->
 								</source>
 							  </sources>
 							</mapping>
@@ -470,35 +466,7 @@
 						</configuration>
 
 				 </plugin>
-				 <plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<executions>
-						<execution>
-								 <id>deploy-snapshot</id>
-								 <goals>
-									<goal>deploy-file</goal>
-								 </goals>
-								 <phase>deploy</phase>
-								 <configuration>
-									<directories>
-										<directory>target/rpm/MserviceCIdemo/RPMS/noarch/</directory>
-									</directories>
-								<repositoryId>${repoMavenSnapshotId}</repositoryId>
-									<url>${repoMavenSnapshotUrl}</url>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>${project.artifactId}</artifactId>
-									<version>${project.version}-r${buildNumber}</version>
-									<!-- <file>${project.build.directory}/${project.artifactId}-${project.version}-r${buildNumber}.rpm</file> -->
-								<file>target/rpm/MserviceCIdemo/RPMS/noarch/${project.artifactId}-${project.version}${timestamp}.noarch.rpm</file>
-								<uniqueVersion>false</uniqueVersion>
-									<packaging>rpm</packaging>
-								 </configuration>
-							</execution>
-					</executions>
-				 </plugin>
 				</plugins>
-				<!--! <finalName>$\{project.artifactId}-$\{project.version}-r${buildNumber}</finalName> -->
 			</build>
 		</profile>
 	</profiles>
