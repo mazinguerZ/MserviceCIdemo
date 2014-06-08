@@ -142,7 +142,7 @@ if [ -f "snapshot.txt" ]; then
         git checkout develop
 	
 	release=`echo $VERSION | cut -d"." -f1`
-	updateRelease=$release + 1
+	updateRelease=`expr $release + 1`
 	
 	mvn versions:set -DnewVersion=$updateRelease".0.0-SNAPSHOT" -DgenerateBackupPoms=false > snapshot.txt
 
@@ -222,3 +222,5 @@ case "$OPTION"
  nombrar)
        uploadRPM	
 esac
+
+
