@@ -6,7 +6,7 @@ DEVELOP=$2
 OPTION=$3
 PERFIL=$4
 #RUTA_RPM="/home/pulgoso/NetBeansProjects/MserviceCIdemo/target/rpm/MserviceCIdemo/RPMS/noarch/"
-RUTA_RPM=`pwd`"target/rpm/MserviceCIdemo/RPMS/noarch/"
+RUTA_RPM=`pwd`"/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_REPO="/home/pulgoso/.m2/repository/dpl/uah/service/ci/MserviceCIdemo/"
 
 frenombraRPM (){
