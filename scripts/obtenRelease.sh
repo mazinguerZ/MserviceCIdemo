@@ -4,6 +4,7 @@
 VERSION=$1
 DEVELOP=$2
 OPTION=$3
+PERFIL=$4
 RUTA_RPM="/home/pulgoso/NetBeansProjects/MserviceCIdemo/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_REPO="/home/pulgoso/.m2/repository/dpl/uah/service/ci/MserviceCIdemo/"
 
@@ -19,6 +20,21 @@ ls -l $RUTA_REPO/$1/
 
 }
 
+uploadRPM (){
+#Obtiene el RPM generado y lo sube a Nexus.
+
+nombreRPM=`ls $RUTA_RPM`
+VERSION=`echo $nombreRPM | cut -d"-" -f2`
+
+urlNexus="http://localhost:8081/nexus/content/repositories/snapshots/dpl/uah/service/ci/MserviceCIdemo"
+
+cd $RUTA_RPM
+
+curl -v -u admin:admin123 --upload-file $nombreRPM $urlNexus/$VERSION"-SNAPSHOT/RPMS"/$nombreRPM
+
+}
+
+
 fbuild (){
 #se le pasara como parametro la version en la que se quiere trabajar
 
@@ -26,9 +42,9 @@ fbuild (){
 		rm -rf compilacion.txt
 	fi
 	
-	git checkout $1
-	git pull origin $1
-	mvn clean install > compilacion.txt
+	git checkout $2
+	git pull origin $2
+	mvn clean install -P $1> compilacion.txt
 
 	if [ `cat compilacion.txt | grep SUCCESS | cut -d " " -f3 | tail -1` == SUCCESS ]; then
 		
@@ -54,18 +70,18 @@ fupdateVersionRelease(){
 	COMMIT=`git log | head -1 | cut -d " " -f2`
 	
 	#Creación del tag
-	git tag -a $1/CC $COMMIT -m "Code Complete"
+	git tag -a $VERSION/CC $COMMIT -m "Code Complete"
 
 	#Creacion de la rama
-	git checkout -b release/$1 $COMMIT
+	git checkout -b release/$VERSION $COMMIT
 		
 	#Comprobacion que la rama se ha creado correctamente.
 
-	RAMA="release/"$1
+	RAMA="release/"$VERSION
 
 	if [ `git branch| grep "* " | cut -d " " -f2` == $RAMA ]; then
 
-		mvn versions:set -DnewVersion=$1 -DgenerateBackupPoms=false > release.txt
+		mvn versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false > release.txt
 		#git commit -a -m "[RSE][Updated version to $1]"
 
 	        if [ `cat release.txt | grep SUCCESS | cut -d " " -f3 | tail -1` == SUCCESS ]; then
@@ -79,21 +95,21 @@ fupdateVersionRelease(){
 
 		#	mvn versions:set -DnewVersion=$1 -DgenerateBackupPoms=false > release.txt
 
-			mvn clean install > segundaCompilacion.txt
+			mvn clean install -Prelease > segundaCompilacion.txt
 
 			if [ `cat segundaCompilacion.txt | grep SUCCESS | cut -d " " -f3 | tail -1` == SUCCESS ]; then
 
 				#Se hace el commit de la version
-				git commit -a -m "[RSE][Updated version to $1]"
+				git commit -a -m "[RSE Updated version to $VERSION]"
 
 				#Se renombra el rpm con el build-number
-				frenombraRPM $1	
+				#frenombraRPM $1	
 
 				#Se despliega el sofware generado en nexus
-                                mvn deploy
+                                mvn clean deploy -Prelease
 
 				#se sube la nueva rama a github
-				git push origin release/$1
+				git push origin release/$VERSION
 				git push --tags
 				
 				return 1;
@@ -124,26 +140,32 @@ if [ -f "snapshot.txt" ]; then
 
         git checkout develop
 	
-	mvn versions:set -DnewVersion=$1 -DgenerateBackupPoms=false > snapshot.txt
+	release=`echo $VERSION | cut -d"." -f1`
+	updateRelease=$release + 1
+	
+	mvn versions:set -DnewVersion=$updateRelease".0.0-SNAPSHOT" -DgenerateBackupPoms=false > snapshot.txt
 
         if [ `cat snapshot.txt | grep SUCCESS | cut -d " " -f3 | tail -1` == SUCCESS ]; then
-                git commit -a -m "[RSE][Updated version to $1"
+                git commit -a -m "[RSE][Updated version to $updateRelease.0.0-SNAPSHOT]"
 
                 COMMIT=`git log | head -1 | cut -d " " -f2`
 
                 #Creación del tag
-                git tag -a $1/KO $COMMIT -m "Kick Off"
+                git tag -a $updateRelease".0.0"/KO $COMMIT -m "Kick Off"
                 
 		if [ -f "segundaCompilacion.txt" ]; then
                 	rm -rf segundaCompilacion.txt
 		fi		
 
 
-                mvn clean install > segundaCompilacion.txt
+                mvn clean install -P snapshot > segundaCompilacion.txt
                 if [ `cat segundaCompilacion.txt | grep SUCCESS | cut -d " " -f3 | tail -1` == SUCCESS ]; then
 
 	                #Se despliega el sofware generado en nexus
-			mvn clean deploy
+			mvn clean deploy -P snapshot
+                        
+                        #Sube el RPM a Nexus via HTTP
+			uploadRPM
 
 			#se sube la nueva rama a github
                         git push origin develop 
@@ -197,7 +219,7 @@ case "$OPTION"
                 echo "Revise el fichero segundaCompilacion.txt porque ha habido un error en la compilacion..."
         fi;;
  nombrar)
-	frenombraRPM $1
+       uploadRPM	
 esac
 
 

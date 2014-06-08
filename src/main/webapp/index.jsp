@@ -8,6 +8,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!## This page is for the Integration continuos DEMO</h1>
+        <h1>Hello World!## This page is for the Integration continuos DEMO: UAH</h1>
     </body>
 </html>
