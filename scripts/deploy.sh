@@ -1,6 +1,6 @@
 #!/usr/bin/expect -f
 
-#Modifico un archivo para que cuando se detecte un cambio se ejecute el job de CI en jenkins
+#Modifico un archivo para que cuando se detecte un cambio se ejecute el job de CI en jenkins, otro cambio mas
 
 #Variables
 set RUTA_RPM [lindex $argv 0]
