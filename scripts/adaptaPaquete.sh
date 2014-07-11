@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Hola introduzco un cambio
+#Hola introduzco un cambio, cambio 2
 
 PATH_RPM="/home/pulgoso/NetBeansProjects/MserviceCIdemo/target/rpm/MserviceCIdemo/RPMS/noarch/"
 HASH=`git log --pretty=format:"%h" -1`
