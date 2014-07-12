@@ -112,7 +112,7 @@ fupdateVersionRelease(){
 				echo $RUTA_RPM
 				echo "#################################################################################################"
 				RPM_RELEASE=`ls $RUTA_RPM`
-				P1=`echo $RPM_RELEASE | cut -d"-" -f3`
+				P1=`echo $RPM_RELEASE | cut -d"-" -f2`
 				P2=`echo $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
 				VERSION_NEXUS=$P1$P2
 
