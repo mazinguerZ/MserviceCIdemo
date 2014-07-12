@@ -107,21 +107,22 @@ fupdateVersionRelease(){
 				#Se renombra el rpm con el build-number
 				#frenombraRPM $1	
 
-				#Se almacena la version del RPM para luego usarlo en el proceso de instalacion
-				echo "#####################################################################################################"
-				echo $RUTA_RPM
-				echo "#################################################################################################"
-				RPM_RELEASE=`ls $RUTA_RPM`
-				P1=`echo $RPM_RELEASE | cut -d"-" -f2`
-				P2=`echo $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
-				VERSION_NEXUS=$P1"-r"$P2
-
 				#Se despliega el sofware generado en nexus
                                 mvn clean deploy -Prelease
 
 				#se sube la nueva rama a github
 				git push origin release/$VERSION
 				git push --tags
+
+				#Se almacena la version del RPM para luego usarlo en el proceso de instalacion
+                                echo "#####################################################################################################"
+                                echo $RUTA_RPM
+                                echo "#################################################################################################"
+                                RPM_RELEASE=`ls $RUTA_RPM`
+                                P1=`echo $RPM_RELEASE | cut -d"-" -f2`
+                                P2=`echo $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
+                                VERSION_NEXUS=$P1"-r"$P2
+
 				
 				return 1;
 			else
