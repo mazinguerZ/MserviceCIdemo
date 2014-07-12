@@ -113,7 +113,7 @@ fupdateVersionRelease(){
 				#se sube la nueva rama a github
 				git push origin release/$VERSION
 				git push --tags
-
+				 mvn clean deploy -Prelease
 				#Se almacena la version del RPM para luego usarlo en el proceso de instalacion
                                 echo "#####################################################################################################"
                                 echo $RUTA_RPM
