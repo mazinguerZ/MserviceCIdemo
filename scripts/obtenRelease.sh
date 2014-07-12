@@ -8,6 +8,7 @@ PERFIL=$4
 #RUTA_RPM="/home/pulgoso/NetBeansProjects/MserviceCIdemo/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_RPM=`pwd`"/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_REPO="/home/pulgoso/.m2/repository/dpl/uah/service/ci/MserviceCIdemo/"
+URI_NEXUS="http://localhost:8081/nexus/service/local/repositories/releases/content/dpl/uah/service/ci/MserviceCIdemo/"
 
 frenombraRPM (){
 #Se le pasa como parámetro la version del RPM
@@ -105,6 +106,12 @@ fupdateVersionRelease(){
 
 				#Se renombra el rpm con el build-number
 				#frenombraRPM $1	
+
+				#Se almacena la version del RPM para luego usarlo en el proceso de instalacion
+				RPM_RELEASE=`ls RUTA_RPM`
+				P1=`ls $RPM_RELEASE | cut -d"-" -f3`
+				P2=`ls $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
+				VERSION_NEXUS=$P1$P2
 
 				#Se despliega el sofware generado en nexus
                                 mvn clean deploy -Prelease
@@ -215,7 +222,7 @@ case "$OPTION"
                 	echo "Revise el fichero snapshot.txt o bien terceraCompilacion.txt ..."
         	fi
 		
-                
+                wget $URI_NEXUS$VERSION_NEXUS"/MserviceCIdemo-"$VERSION_NEXUS".rpm"
         else
                 echo "Revise el fichero segundaCompilacion.txt porque ha habido un error en la compilacion..."
         fi;;
