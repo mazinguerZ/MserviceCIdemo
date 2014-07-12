@@ -108,6 +108,9 @@ fupdateVersionRelease(){
 				#frenombraRPM $1	
 
 				#Se almacena la version del RPM para luego usarlo en el proceso de instalacion
+				echo "#####################################################################################################"
+				echo $RUTA_RPM
+				echo "#################################################################################################"
 				RPM_RELEASE=`ls RUTA_RPM`
 				P1=`ls $RPM_RELEASE | cut -d"-" -f3`
 				P2=`ls $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
