@@ -114,7 +114,7 @@ fupdateVersionRelease(){
 				RPM_RELEASE=`ls $RUTA_RPM`
 				P1=`echo $RPM_RELEASE | cut -d"-" -f2`
 				P2=`echo $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
-				VERSION_NEXUS=$P1$P2
+				VERSION_NEXUS=$P1"-r"$P2
 
 				#Se despliega el sofware generado en nexus
                                 mvn clean deploy -Prelease
