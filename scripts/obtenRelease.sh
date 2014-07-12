@@ -8,6 +8,8 @@ PERFIL=$4
 #RUTA_RPM="/home/pulgoso/NetBeansProjects/MserviceCIdemo/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_RPM=`pwd`"/target/rpm/MserviceCIdemo/RPMS/noarch/"
 RUTA_REPO="/home/pulgoso/.m2/repository/dpl/uah/service/ci/MserviceCIdemo/"
+RUTA_INS="/home/pulgoso/instalaciones"
+DOWN_NEXUS="http://localhost:8081/nexus/service/local/repositories/releases/content/dpl/uah/service/ci/MserviceCIdemo/"
 
 frenombraRPM (){
 #Se le pasa como parámetro la version del RPM
@@ -112,7 +114,9 @@ fupdateVersionRelease(){
 				#se sube la nueva rama a github
 				git push origin release/$VERSION
 				git push --tags
-				
+
+				sssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+				RPM_RELEASE=`ls $RUTA_RPM`		
 				return 1;
 			else
 				echo "Fallo en la segunda compilacion, antes de subir la rama release/$1"
@@ -215,7 +219,11 @@ case "$OPTION"
                 	echo "Revise el fichero snapshot.txt o bien terceraCompilacion.txt ..."
         	fi
 		
-                
+		rm -f *.rpm
+		P1=`ls $RPM_RELEASE | cut -d"-" -f2`
+		P2=`ls $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
+		Ver_NEXUS=$P1$P2"/
+		wget $DOWN_NEXUS$Ver_NEXUS\"/MserviceCIdemo-"$Ver_NEXUS".rpm"                
         else
                 echo "Revise el fichero segundaCompilacion.txt porque ha habido un error en la compilacion..."
         fi;;
