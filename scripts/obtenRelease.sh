@@ -112,8 +112,8 @@ fupdateVersionRelease(){
 				echo $RUTA_RPM
 				echo "#################################################################################################"
 				RPM_RELEASE=`ls $RUTA_RPM`
-				P1=`ls $RPM_RELEASE | cut -d"-" -f3`
-				P2=`ls $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
+				P1=`echo $RPM_RELEASE | cut -d"-" -f3`
+				P2=`echo $RPM_RELEASE | cut -d"-" -f3 | cut -d"." -f1`
 				VERSION_NEXUS=$P1$P2
 
 				#Se despliega el sofware generado en nexus
